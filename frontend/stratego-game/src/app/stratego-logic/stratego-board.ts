@@ -177,4 +177,21 @@ export class StrategoBoard{
         }
         return safeSquares;
     }
+
+    public move(prevX: number, prevY: number, newX: number, newY: number): void {
+        if (!this.areCoordsValid(prevX, prevY) || !this.areCoordsValid(newX, newY)) return;
+        const piece: Piece | null = this.strategoBoard[prevX][prevY];
+        if (!piece || piece.color !== this._playerColor) return;
+
+        const pieceSafeSquares: Coords[] | undefined = this._safeSquares.get(prevX + "," + prevY);
+        if (!pieceSafeSquares || !pieceSafeSquares.find(coords => coords.x === newX && coords.y === newY))
+            throw new Error("Square is not safe");
+
+        this.strategoBoard[prevX][prevY] = null;
+        this.strategoBoard[newX][newY] = piece;
+
+        /* Change This!! */
+        this._playerColor = this._playerColor === Color.Blue ? Color.Red : Color.Blue;
+        this._safeSquares = this.findSafeSquares();
+    }
 }

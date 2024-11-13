@@ -1,4 +1,4 @@
-import { Color, FENChar } from "./models";
+import { Color, Coords, FENChar, SafeSquares } from "./models";
 import { Artillery } from "./pieces/artillery";
 import { Assassin } from "./pieces/assassin";
 import { Bomb } from "./pieces/bomb";
@@ -15,7 +15,9 @@ import { Scout } from "./pieces/scout";
 
 export class StrategoBoard{
     private strategoBoard:(Piece|null)[][];
+    private strategoBoardSize: number = 12;
     private _playerColor = Color.Blue;
+    private _safeSquares: SafeSquares;
 
     constructor(){
         this.strategoBoard = [
@@ -44,6 +46,7 @@ export class StrategoBoard{
             let pos = positions2.pop()!;
             this.strategoBoard[pos[0]][pos[1]] = pieces2.pop()!;
         }
+        this._safeSquares = this.findSafeSquares();
     }
 
     public get playerColor(): Color {
@@ -54,6 +57,10 @@ export class StrategoBoard{
         return this.strategoBoard.map(row => {
             return row.map(piece => piece instanceof Piece ? piece.FENChar : null);
         });
+    }
+
+    public get safeSquares(): SafeSquares {
+        return this._safeSquares;
     }
 
     public randomizePositions(invert: boolean): number[][] {
@@ -114,5 +121,51 @@ export class StrategoBoard{
             pieces.push(new Bomb(color))
         }
         return pieces;
+    }
+
+    public areCoordsValid(x: number, y: number): boolean {
+        return x >= 0 && y >= 0 && x < this.strategoBoardSize && y < this.strategoBoardSize;
+    }
+
+    private findSafeSquares(): SafeSquares{
+        const safeSquares: SafeSquares = new Map<string, Coords[]>();
+
+        for (let x = 0; x < this.strategoBoardSize; x++) {
+            for (let y = 0; y < this.strategoBoardSize; y++) {
+                const piece: Piece | null = this.strategoBoard[x][y];
+                if (!piece || piece.color !== this._playerColor) continue;
+                // if (!piece) continue;
+
+                const pieceSafeSquares: Coords[] = [];
+                for (const {x: dx, y: dy} of piece.directions) {
+                    let newX: number = x + dx;
+                    let newY: number = y + dy;
+
+                    if (!this.areCoordsValid(newX, newY)) continue;
+
+                    let newPiece: Piece | null = this.strategoBoard[newX][newY];
+                    if (newPiece && newPiece.color === piece.color) continue;
+
+                    if (piece instanceof Bomb || piece instanceof Flag) {
+                    } else if (piece instanceof Scout) {
+                        while (this.areCoordsValid(newX, newY)) {
+                            newPiece = this.strategoBoard[newX][newY];
+                            if (newPiece && newPiece.color === piece.color) break;
+                            pieceSafeSquares.push({x: newX, y: newY});
+
+                            if (newPiece !== null) break;
+                            newX += dx;
+                            newY += dy;
+                        }
+                    } else {
+                        pieceSafeSquares.push({x: newX, y: newY});
+                    }
+                }
+                if (pieceSafeSquares.length) {
+                    safeSquares.set(x + "," + y, pieceSafeSquares);
+                }
+            }
+        }
+        return safeSquares;
     }
 }

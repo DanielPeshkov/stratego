@@ -1,6 +1,11 @@
 <div class="stratego-board">
     <div *ngFor="let row of strategoBoardView; let x = index" class="row">
-        <div *ngFor="let piece of row; let y = index" class="square">
+        <div *ngFor="let piece of row; let y = index" class="square" [ngClass]="{
+            'selected-square': isSquareSelected(x, y)
+        }"
+            (click)="selectingPiece(x, y)"
+        >
+        <div [ngClass]="{'safe-square': isSquareSafeForSelectedPiece(x, y)}"></div>
             @if (piece) {
                 {{piece}}
             } 

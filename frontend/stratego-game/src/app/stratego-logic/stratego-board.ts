@@ -1,3 +1,4 @@
+import { first } from "rxjs";
 import { Color, Coords, FENChar, SafeSquares } from "./models";
 import { Artillery } from "./pieces/artillery";
 import { Assassin } from "./pieces/assassin";
@@ -12,15 +13,19 @@ import { Marine } from "./pieces/marine";
 import { Piece } from "./pieces/piece";
 import { Sapper } from "./pieces/sapper";
 import { Scout } from "./pieces/scout";
+import  { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
-export class StrategoBoard{
+export class StrategoBoard {
     private strategoBoard:(Piece|null)[][];
     private strategoBoardSize: number = 12;
     private _playerColor = Color.Blue;
     private _safeSquares: SafeSquares;
     public gameOver: boolean = false;
+    private server: WebSocketSubject<any>;
 
     constructor(){
+        this.server = webSocket('ws://localhost:3000')
+        this.server.subscribe();
         this.strategoBoard = [
             [null, null, null, null, null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null, null, null, null, null],
@@ -35,18 +40,67 @@ export class StrategoBoard{
             [null, null, null, null, null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null, null, null, null, null],
         ]
-        let pieces = this.generatePieces(Color.Blue);
-        let positions = this.randomizePositions(false);
-        while (positions.length > 0) {
-            let pos = positions.pop()!;
-            this.strategoBoard[pos[0]][pos[1]] = pieces.pop()!;
+        // let pieces = this.generatePieces(Color.Blue);
+        // let positions = this.randomizePositions(false);
+        // while (positions.length > 0) {
+        //     let pos = positions.pop()!;
+        //     this.strategoBoard[pos[0]][pos[1]] = pieces.pop()!;
+        // }
+        // let pieces2 = this.generatePieces(Color.Red);
+        // let positions2 = this.randomizePositions(true);
+        // while (positions2.length > 0) {
+        //     let pos = positions2.pop()!;
+        //     this.strategoBoard[pos[0]][pos[1]] = pieces2.pop()!;
+        // }
+        this._safeSquares = this.findSafeSquares();
+        // this.init();
+    }
+
+    async init(): Promise<void> {
+        let response: ConnectionResponse = await new Promise((resolve) => {
+            this.server.asObservable().pipe(first()).subscribe((msg) => {
+                resolve(msg);
+            })
+          });
+        if (!response.gameStarted) {
+            response = await new Promise((resolve) => {
+            this.server.asObservable().pipe(first()).subscribe((msg) => {
+                resolve(msg);
+                })
+            });
         }
-        let pieces2 = this.generatePieces(Color.Red);
-        let positions2 = this.randomizePositions(true);
-        while (positions2.length > 0) {
-            let pos = positions2.pop()!;
-            this.strategoBoard[pos[0]][pos[1]] = pieces2.pop()!;
+        console.log('server response: ', response.player)
+        if (response.player == 1) {
+            let pieces = this.generatePieces(Color.Blue);
+            let positions = this.randomizePositions(false);
+            this.server.next(JSON.stringify({'pieces': pieces, 'positions': positions}));
+            while (positions.length > 0) {
+                let pos = positions.pop()!;
+                this.strategoBoard[pos[0]][pos[1]] = pieces.pop()!;
+            }
+            let data: OpponentData = await new Promise((resolve) => {
+                this.server.asObservable().pipe(first()).subscribe(msg => {
+                    resolve(msg);
+                })
+            });
+            let pieces2 = data.pieces;
+            let positions2 = data.positions;
+            while (positions2.length > 0) {
+                let pos = positions2.pop()!;
+                let pieceCode = pieces2.pop()!;
+                this.strategoBoard[pos[0]][pos[1]] =  this.pieceFromCode(pieceCode, Color.Red);
+            }
+        } else {
+            this._playerColor = Color.Red;
+            let pieces2 = this.generatePieces(Color.Red);
+            let positions2 = this.randomizePositions(true);
+            this.server.next(JSON.stringify({'pieces': pieces2, 'positions': positions2}));
+            while (positions2.length > 0) {
+                let pos = positions2.pop()!;
+                this.strategoBoard[pos[0]][pos[1]] = pieces2.pop()!;
+            }
         }
+        console.log(this.strategoBoard)
         this._safeSquares = this.findSafeSquares();
     }
 
@@ -122,6 +176,14 @@ export class StrategoBoard{
             pieces.push(new Bomb(color))
         }
         return pieces;
+    }
+
+    public pieceFromCode(c: Piece, color: Color): Piece {
+        console.log(typeof c, c)
+        if (c.FENChar == "F") 
+            return new Flag(color);
+        
+            return new Bomb(color);
     }
 
     public areCoordsValid(x: number, y: number): boolean {
@@ -218,4 +280,14 @@ export class StrategoBoard{
             return b;
         }
     }
+}
+
+type ConnectionResponse = {
+    gameStarted: boolean;
+    player: number;
+}
+
+type OpponentData = {
+    pieces: Piece[];
+    positions: number[][];
 }

@@ -9,7 +9,7 @@
                 @if (piece) {
                     {{piece}}
                 } 
-            <img *ngIf="piece" [src]="pieceImagePaths[piece]" [alt]="piece" class="piece">
+            <img *ngIf="piece" [src]="(pieceImagePaths[piece])" [alt]="piece" class="piece">
         </div>
     </div>
 </div>"

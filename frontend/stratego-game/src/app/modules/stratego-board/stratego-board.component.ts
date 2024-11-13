@@ -20,6 +20,15 @@ export class StrategoBoardComponent {
   private selectedSquare: SelectedSquare = {piece: null};
   private pieceSafeSquares: Coords[] = [];
   public get gameOver(): boolean {return this.strategoBoard.gameOver};
+  
+  constructor() {
+    this.init();
+  }
+
+  async init() {
+    await this.strategoBoard.init();
+    this.strategoBoardView = this.strategoBoard.strategoBoardView;
+  }
 
   public isSquareSelected(x: number, y: number): boolean {
     if (!this.selectedSquare.piece) return false;

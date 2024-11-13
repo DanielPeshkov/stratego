@@ -1,17 +1,18 @@
 import { Component } from '@angular/core';
 import { StrategoBoard } from '../../stratego-logic/stratego-board';
-import { Color, Coords, FENChar, SafeSquares } from '../../stratego-logic/models';
-import { NgClass, NgFor } from '@angular/common';
+import { Color, Coords, FENChar, SafeSquares, pieceImagePaths } from '../../stratego-logic/models';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 import { SelectedSquare } from './models';
 
 @Component({
   selector: 'app-stratego-board',
   standalone: true,
-  imports: [NgFor, NgClass],
+  imports: [NgFor, NgClass, NgIf],
   templateUrl: './stratego-board.component.html',
   styleUrl: './stratego-board.component.css'
 })
 export class StrategoBoardComponent {
+  public pieceImagePaths = pieceImagePaths;
   private strategoBoard = new StrategoBoard();
   public strategoBoardView: (FENChar|null)[][] = this.strategoBoard.strategoBoardView;
   public get playerColor(): Color {return this.strategoBoard.playerColor};

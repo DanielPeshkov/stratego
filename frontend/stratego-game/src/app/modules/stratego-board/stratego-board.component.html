@@ -5,10 +5,11 @@
         }"
             (click)="move(x, y)"
         >
-        <div [ngClass]="{'safe-square': isSquareSafeForSelectedPiece(x, y)}"></div>
-            @if (piece) {
-                {{piece}}
-            } 
+            <div [ngClass]="{'safe-square': isSquareSafeForSelectedPiece(x, y)}"></div>
+                @if (piece) {
+                    {{piece}}
+                } 
+            <img *ngIf="piece" [src]="pieceImagePaths[piece]" [alt]="piece" class="piece">
         </div>
     </div>
 </div>"

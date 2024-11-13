@@ -2,8 +2,8 @@
     display: flex;
     justify-content: center;
     flex-direction: column-reverse;
-    width: 720px;
-    height: 720px;
+    width: auto;
+    height: auto;
 }
 
 .rotated {
@@ -20,7 +20,7 @@
     justify-content: center;
     align-items: center;
     height: 60px;
-    width: 60px;
+    width: 80px;
     cursor: pointer;
     border: 1px solid #bbb;
     background-color: white;
@@ -29,6 +29,7 @@
 
 .game-over-message {
     color: white;
+    float: right;
 }
 
 .promotion-dialog {

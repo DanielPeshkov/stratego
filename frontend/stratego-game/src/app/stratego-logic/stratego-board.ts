@@ -1,4 +1,4 @@
-import { Color } from "./models";
+import { Color, FENChar } from "./models";
 import { Artillery } from "./pieces/artillery";
 import { Assassin } from "./pieces/assassin";
 import { Bomb } from "./pieces/bomb";
@@ -44,7 +44,16 @@ export class StrategoBoard{
             let pos = positions2.pop()!;
             this.strategoBoard[pos[0]][pos[1]] = pieces2.pop()!;
         }
-        console.log(this.strategoBoard);
+    }
+
+    public get playerColor(): Color {
+        return this._playerColor;
+    }
+
+    public get strategoBoardView(): (FENChar|null)[][] {
+        return this.strategoBoard.map(row => {
+            return row.map(piece => piece instanceof Piece ? piece.FENChar : null);
+        });
     }
 
     public randomizePositions(invert: boolean): number[][] {

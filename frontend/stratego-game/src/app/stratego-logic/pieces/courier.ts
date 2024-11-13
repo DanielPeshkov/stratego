@@ -1,4 +1,4 @@
-import { Color, Coords, FENChar } from "../models";
+import { Attack, Color, Coords, Defense, FENChar } from "../models";
 import { Piece } from "./piece";
 
 export class Courier extends Piece{
@@ -9,6 +9,8 @@ export class Courier extends Piece{
         {x: 0, y: 1},
         {x: 0, y: -1}
     ];
+    protected override _attack: Attack = 5;
+    protected override _defense: Defense = 5;
 
     constructor(private pieceColor: Color) {
         super(pieceColor);

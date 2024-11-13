@@ -18,6 +18,7 @@ export class StrategoBoardComponent {
   public get safeSquares(): SafeSquares {return this.strategoBoard.safeSquares}
   private selectedSquare: SelectedSquare = {piece: null};
   private pieceSafeSquares: Coords[] = [];
+  public get gameOver(): boolean {return this.strategoBoard.gameOver};
 
   public isSquareSelected(x: number, y: number): boolean {
     if (!this.selectedSquare.piece) return false;

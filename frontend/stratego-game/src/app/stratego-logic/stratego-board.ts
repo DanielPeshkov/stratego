@@ -1,6 +1,7 @@
 import { Color } from "./models";
 import { Artillery } from "./pieces/artillery";
 import { Assassin } from "./pieces/assassin";
+import { Bomb } from "./pieces/bomb";
 import { Cavalry } from "./pieces/cavalry";
 import { Courier } from "./pieces/courier";
 import { Dragoon } from "./pieces/dragoon";
@@ -99,6 +100,9 @@ export class StrategoBoard{
         }
         for (let index = 0; index < 6; index++) {
             pieces.push(new Scout(color))
+        }
+        for (let index = 0; index < 6; index++) {
+            pieces.push(new Bomb(color))
         }
         return pieces;
     }

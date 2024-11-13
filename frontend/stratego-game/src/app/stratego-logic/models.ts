@@ -39,4 +39,6 @@ export type Attack = number;
 
 export type Defense = number;
 
+export type Swim = boolean;
+
 export type SafeSquares = Map<string, Coords[]>;

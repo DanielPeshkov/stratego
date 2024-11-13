@@ -3,7 +3,7 @@
         <div *ngFor="let piece of row; let y = index" class="square" [ngClass]="{
             'selected-square': isSquareSelected(x, y)
         }"
-            (click)="selectingPiece(x, y)"
+            (click)="move(x, y)"
         >
         <div [ngClass]="{'safe-square': isSquareSafeForSelectedPiece(x, y)}"></div>
             @if (piece) {

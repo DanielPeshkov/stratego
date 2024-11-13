@@ -159,12 +159,12 @@ export class StrategoBoard{
                         }
                     } else if (piece instanceof Cavalry) {
                         pieceSafeSquares.push({x: newX, y: newY});
-                        if (newPiece != null) break;
+                        if (newPiece != null) continue;
                         newX += dx;
                         newY += dy;
                         if (!this.areCoordsValid(newX, newY)) continue;
                         newPiece = this.strategoBoard[newX][newY];
-                        if (newPiece && newPiece.color === piece.color) break;
+                        if (newPiece && newPiece.color === piece.color) continue;
                         pieceSafeSquares.push({x: newX, y: newY});
                     } else {
                         pieceSafeSquares.push({x: newX, y: newY});

@@ -8,11 +8,7 @@ export class Cavalry extends Piece{
         {x: 1, y: 0},
         {x: -1, y: 0},
         {x: 0, y: 1},
-        {x: 0, y: -1},
-        {x: 2, y: 0},
-        {x: -2, y: 0},
-        {x: 0, y: 2},
-        {x: 0, y: -2}
+        {x: 0, y: -1}
     ];
     protected override _attack: Attack = 6;
     protected override _defense: Defense = 6;

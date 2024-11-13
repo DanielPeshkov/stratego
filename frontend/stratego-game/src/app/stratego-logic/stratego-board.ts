@@ -18,6 +18,7 @@ export class StrategoBoard{
     private strategoBoardSize: number = 12;
     private _playerColor = Color.Blue;
     private _safeSquares: SafeSquares;
+    public gameOver: boolean = false;
 
     constructor(){
         this.strategoBoard = [
@@ -188,10 +189,33 @@ export class StrategoBoard{
             throw new Error("Square is not safe");
 
         this.strategoBoard[prevX][prevY] = null;
-        this.strategoBoard[newX][newY] = piece;
+        const opponentPiece: Piece | null = this.strategoBoard[newX][newY];
+        if (opponentPiece instanceof Flag) {
+            this.gameOver = true;
+            console.log(`${this._playerColor} Player Wins`);
+        }
+        if (!opponentPiece) {
+            this.strategoBoard[newX][newY] = piece;
+        } else {
+            this.strategoBoard[newX][newY] = this.comparePieces(piece, opponentPiece);
+        }
 
         /* Change This!! */
         this._playerColor = this._playerColor === Color.Blue ? Color.Red : Color.Blue;
         this._safeSquares = this.findSafeSquares();
+    }
+
+    public comparePieces(a: Piece, b: Piece): Piece | null {
+        if (a instanceof Sapper && b instanceof Bomb) {
+            return a;
+        } else if (a instanceof Artillery && b instanceof Bomb) {
+            return null;
+        } else if (a instanceof Assassin && (b instanceof General || b instanceof Assassin)) {
+            return a;
+        } else if (a.attack > b.defense) {
+            return a;
+        } else {
+            return b;
+        }
     }
 }

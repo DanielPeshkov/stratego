@@ -34,6 +34,7 @@ export class StrategoBoardComponent {
   }
 
   public selectingPiece(x: number, y: number): void {
+    if (this.strategoBoard.gameOver) return;
     const piece: FENChar | null = this.strategoBoardView[x][y];
     if (!piece) return;
     if (this.isWrongPieceSelected(piece)) return;

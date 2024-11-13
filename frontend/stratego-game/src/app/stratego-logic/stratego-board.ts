@@ -212,7 +212,7 @@ export class StrategoBoard{
             return null;
         } else if (a instanceof Assassin && (b instanceof General || b instanceof Assassin)) {
             return a;
-        } else if (a.attack > b.defense) {
+        } else if (a.attack >= b.defense) {
             return a;
         } else {
             return b;

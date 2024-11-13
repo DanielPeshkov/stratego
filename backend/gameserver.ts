@@ -10,7 +10,7 @@ export class GameServer {
             this.playerLobby = null;
         } else {
             this.playerLobby = ws;
-            ws.send(JSON.stringify({'response': 'Awaiting another player...'}));
+            ws.send(JSON.stringify({'gameStarted': false}));
         }
     }
 }

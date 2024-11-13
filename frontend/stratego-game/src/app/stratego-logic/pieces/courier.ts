@@ -1,4 +1,4 @@
-import { Attack, Color, Coords, Defense, FENChar } from "../models";
+import { Attack, Color, Coords, Defense, FENChar, Swim } from "../models";
 import { Piece } from "./piece";
 
 // Courier can drag any friendly piece behind it
@@ -16,6 +16,7 @@ export class Courier extends Piece{
     ];
     protected override _attack: Attack = 5;
     protected override _defense: Defense = 5;
+    protected override _swim: Swim = false;
 
     constructor(private pieceColor: Color) {
         super(pieceColor);

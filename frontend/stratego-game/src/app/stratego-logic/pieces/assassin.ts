@@ -1,4 +1,4 @@
-import { Attack, Color, Coords, Defense, FENChar } from "../models";
+import { Attack, Color, Coords, Defense, FENChar, Swim } from "../models";
 import { Piece } from "./piece";
 
 export class Assassin extends Piece{
@@ -11,6 +11,7 @@ export class Assassin extends Piece{
     ];    
     protected override _attack: Attack = 1;
     protected override _defense: Defense = 1;
+    protected override _swim: Swim = true;
 
     constructor(private pieceColor: Color) {
         super(pieceColor);

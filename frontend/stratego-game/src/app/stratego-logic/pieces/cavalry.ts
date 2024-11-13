@@ -1,4 +1,4 @@
-import { Attack, Color, Coords, Defense, FENChar } from "../models";
+import { Attack, Color, Coords, Defense, FENChar, Swim } from "../models";
 import { Piece } from "./piece";
 
 // Cavalry can move two spaces at a time
@@ -16,6 +16,7 @@ export class Cavalry extends Piece{
     ];
     protected override _attack: Attack = 6;
     protected override _defense: Defense = 6;
+    protected override _swim: Swim = false;
 
     constructor(private pieceColor: Color) {
         super(pieceColor);

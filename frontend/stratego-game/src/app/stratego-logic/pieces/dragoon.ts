@@ -1,4 +1,4 @@
-import { Attack, Color, Coords, Defense, FENChar } from "../models";
+import { Attack, Color, Coords, Defense, FENChar, Swim } from "../models";
 import { Piece } from "./piece";
 
 // Good defense and decent attack
@@ -12,6 +12,7 @@ export class Dragoon extends Piece{
     ];
     protected override _attack: Attack = 7;
     protected override _defense: Defense = 9;
+    protected override _swim: Swim = false;
 
     constructor(private pieceColor: Color) {
         super(pieceColor);

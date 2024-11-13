@@ -1,4 +1,4 @@
-import { Attack, Color, Coords, Defense, FENChar } from "../models";
+import { Attack, Color, Coords, Defense, FENChar, Swim } from "../models";
 import { Piece } from "./piece";
 
 // Marine is strong and can Swim
@@ -12,6 +12,7 @@ export class Marine extends Piece{
     ];
     protected override _attack: Attack = 9;
     protected override _defense: Defense = 9;
+    protected override _swim: Swim = true;
 
     constructor(private pieceColor: Color) {
         super(pieceColor);

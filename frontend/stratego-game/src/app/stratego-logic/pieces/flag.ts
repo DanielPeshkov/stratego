@@ -1,4 +1,4 @@
-import { Attack, Color, Coords, Defense, FENChar } from "../models";
+import { Attack, Color, Coords, Defense, FENChar, Swim } from "../models";
 import { Piece } from "./piece";
 
 // Flag cannot move, and is the goal that needs to be captured
@@ -9,6 +9,7 @@ export class Flag extends Piece{
     ];
     protected override _attack: Attack = 0;
     protected override _defense: Defense = 0;
+    protected override _swim: Swim = false;
 
     constructor(private pieceColor: Color) {
         super(pieceColor);

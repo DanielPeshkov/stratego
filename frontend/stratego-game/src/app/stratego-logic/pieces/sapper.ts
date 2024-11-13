@@ -1,4 +1,4 @@
-import { Attack, Color, Coords, Defense, FENChar } from "../models";
+import { Attack, Color, Coords, Defense, FENChar, Swim } from "../models";
 import { Piece } from "./piece";
 
 // Sapper can Swim and Disarm Bombs
@@ -12,6 +12,7 @@ export class Sapper extends Piece{
     ];
     protected override _attack: Attack = 3;
     protected override _defense: Defense = 3;
+    protected override _swim: Swim = true;
 
     constructor(private pieceColor: Color) {
         super(pieceColor);

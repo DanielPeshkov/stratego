@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { StrategoBoard } from './stratego-logic/stratego-board';
 
 @Component({
   selector: 'app-root',
@@ -10,4 +11,6 @@ import { RouterOutlet } from '@angular/router';
 })
 export class AppComponent {
   title = 'stratego-game';
+
+  board = new StrategoBoard();
 }

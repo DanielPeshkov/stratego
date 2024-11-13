@@ -1,6 +1,7 @@
 import { Attack, Color, Coords, Defense, FENChar } from "../models";
 import { Piece } from "./piece";
 
+// Sapper can Swim and Disarm Bombs
 export class Sapper extends Piece{
     protected override _FENChar: FENChar;
     protected override _directions: Coords[] = [

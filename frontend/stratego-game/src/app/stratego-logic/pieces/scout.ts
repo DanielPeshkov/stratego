@@ -1,6 +1,7 @@
 import { Attack, Color, Coords, Defense, FENChar } from "../models";
 import { Piece } from "./piece";
 
+// Scout moves like a rook in chess
 export class Scout extends Piece{
     protected override _FENChar: FENChar;
     protected override _directions: Coords[] = [

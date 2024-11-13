@@ -1,6 +1,7 @@
 import { Attack, Color, Coords, Defense, FENChar } from "../models";
 import { Piece } from "./piece";
 
+// Cavalry can move two spaces at a time
 export class Cavalry extends Piece{
     protected override _FENChar: FENChar;
     protected override _directions: Coords[] = [

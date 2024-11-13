@@ -1,6 +1,7 @@
 import { Attack, Color, Coords, Defense, FENChar } from "../models";
 import { Piece } from "./piece";
 
+// Good defense and decent attack
 export class Dragoon extends Piece{
     protected override _FENChar: FENChar;
     protected override _directions: Coords[] = [

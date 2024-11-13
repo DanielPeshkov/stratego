@@ -1,6 +1,11 @@
 import { Attack, Color, Coords, Defense, FENChar } from "../models";
 import { Piece } from "./piece";
 
+// Courier can drag any friendly piece behind it
+// This includes bombs, flag, or other pieces
+// The piece being "dragged" will just inhabit the last tile Courier was in
+// to create a "drag" effect. 
+// Choosing when to drag and when to drop will be options for the player, could get tricky but fun
 export class Courier extends Piece{
     protected override _FENChar: FENChar;
     protected override _directions: Coords[] = [

@@ -1,6 +1,7 @@
 import { Attack, Color, Coords, Defense, FENChar } from "../models";
 import { Piece } from "./piece";
 
+// Flag cannot move, and is the goal that needs to be captured
 export class Flag extends Piece{
     protected override _FENChar: FENChar;
     protected override _directions: Coords[] = [

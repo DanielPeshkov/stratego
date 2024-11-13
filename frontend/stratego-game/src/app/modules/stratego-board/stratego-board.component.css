@@ -1,14 +1,24 @@
+main {
+    margin-left: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
 .game-container {
     /* position: relative; */
-    /* width: 100%;
-    height: 100vh; */
+    width: 960px;
+    height: 720px;
     background-size: cover;
     /* background-position: center; */
     background-image: url("/battlefields/wooded-field.png");
 }
 
 .stratego-board {
-    /* position: absolute; */
+    /* position: absolute;
+    top: 0;
+    left: 0; */
+    /* margin-left: 20px;
+    margin-top: 20px; */
     display: flex;
     justify-content: center;
     flex-direction: column-reverse;

@@ -19,8 +19,9 @@ export class StrategoBoard {
     private strategoBoard:(Piece|null)[][];
     private strategoBoardSize: number = 12;
     private _playerColor = Color.Blue;
+    private _turnColor = Color.Blue;
     private _safeSquares: SafeSquares;
-    public gameOver: boolean = false;
+    public _gameOver: boolean = false;
     private server: WebSocketSubject<any>;
 
     constructor(){
@@ -40,20 +41,7 @@ export class StrategoBoard {
             [null, null, null, null, null, null, null, null, null, null, null, null],
             [null, null, null, null, null, null, null, null, null, null, null, null],
         ]
-        // let pieces = this.generatePieces(Color.Blue);
-        // let positions = this.randomizePositions(false);
-        // while (positions.length > 0) {
-        //     let pos = positions.pop()!;
-        //     this.strategoBoard[pos[0]][pos[1]] = pieces.pop()!;
-        // }
-        // let pieces2 = this.generatePieces(Color.Red);
-        // let positions2 = this.randomizePositions(true);
-        // while (positions2.length > 0) {
-        //     let pos = positions2.pop()!;
-        //     this.strategoBoard[pos[0]][pos[1]] = pieces2.pop()!;
-        // }
         this._safeSquares = this.findSafeSquares();
-        // this.init();
     }
 
     async init(): Promise<void> {
@@ -99,13 +87,51 @@ export class StrategoBoard {
                 let pos = positions2.pop()!;
                 this.strategoBoard[pos[0]][pos[1]] = pieces2.pop()!;
             }
+            let data: OpponentData = await new Promise((resolve) => {
+                this.server.asObservable().pipe(first()).subscribe(msg => {
+                    resolve(msg);
+                })
+            });
+            let pieces = data.pieces;
+            let positions = data.positions;
+            while (positions.length > 0) {
+                let pos = positions.pop()!;
+                let pieceCode = pieces.pop()!;
+                this.strategoBoard[pos[0]][pos[1]] =  this.pieceFromCode(pieceCode, Color.Blue);
+            }
         }
-        console.log(this.strategoBoard)
         this._safeSquares = this.findSafeSquares();
+    }
+
+    public async waitForMove() {
+        let {x1, x2, y1, y2, gameOver}: MoveData = await new Promise((resolve) => {
+            this.server.asObservable().pipe(first()).subscribe(msg => {
+                resolve(JSON.parse(msg.toString()))
+            })
+        });
+        return {x1, y1, x2, y2, gameOver};
     }
 
     public get playerColor(): Color {
         return this._playerColor;
+    }
+
+    public get turnColor(): Color {
+        return this._turnColor;
+    }
+
+    public get gameOver(): boolean {
+        return this._gameOver;
+    }
+
+    public set gameOver(go: boolean) {
+        this._gameOver = go;
+    }
+
+    public checkGameOver(): void {
+        if (this.gameOver) {  
+            this.server.complete()
+        }
     }
 
     public get strategoBoardView(): (FENChar|null)[][] {
@@ -179,11 +205,32 @@ export class StrategoBoard {
     }
 
     public pieceFromCode(c: Piece, color: Color): Piece {
-        console.log(typeof c, c)
-        if (c.FENChar == "F") 
-            return new Flag(color);
-        
+        switch (JSON.parse(JSON.stringify(c))._FENChar.toUpperCase()) {
+        case "S":
+            return new Scout(color);
+        case "P":
+            return new Sapper(color);
+        case "I":
+            return new Infantry(color);
+        case "C":
+            return new Courier(color);
+        case "H":
+            return new Cavalry(color);
+        case "A":
+            return new Artillery(color);
+        case "D":
+            return new Dragoon(color);
+        case "M":
+            return new Marine(color);
+        case "G":
+            return new General(color);
+        case "K":
+            return new Assassin(color);
+        case "F":
+            return new Flag(color);        
+        default:
             return new Bomb(color);
+        }
     }
 
     public areCoordsValid(x: number, y: number): boolean {
@@ -244,7 +291,8 @@ export class StrategoBoard {
     public move(prevX: number, prevY: number, newX: number, newY: number): void {
         if (!this.areCoordsValid(prevX, prevY) || !this.areCoordsValid(newX, newY)) return;
         const piece: Piece | null = this.strategoBoard[prevX][prevY];
-        if (!piece || piece.color !== this._playerColor) return;
+        if (!piece || piece.color !== this._playerColor || this._playerColor !== this._turnColor) return;
+        if (!piece) return;
 
         const pieceSafeSquares: Coords[] | undefined = this._safeSquares.get(prevX + "," + prevY);
         if (!pieceSafeSquares || !pieceSafeSquares.find(coords => coords.x === newX && coords.y === newY))
@@ -262,9 +310,32 @@ export class StrategoBoard {
             this.strategoBoard[newX][newY] = this.comparePieces(piece, opponentPiece);
         }
 
-        /* Change This!! */
-        this._playerColor = this._playerColor === Color.Blue ? Color.Red : Color.Blue;
+        this.server.next(JSON.stringify({x1: prevX, y1: prevY, x2: newX, y2: newY, gameOver: this.gameOver}));
+        
         this._safeSquares = this.findSafeSquares();
+        this._turnColor = this._turnColor === Color.Blue ? Color.Red : Color.Blue;
+        this.checkGameOver();
+    }
+
+    public moveOpponent(prevX: number, prevY: number, newX: number, newY: number): void {
+        if (!this.areCoordsValid(prevX, prevY) || !this.areCoordsValid(newX, newY)) return;
+        const piece: Piece | null = this.strategoBoard[prevX][prevY];
+        if (!piece) return;
+
+        this.strategoBoard[prevX][prevY] = null;
+        const opponentPiece: Piece | null = this.strategoBoard[newX][newY];
+        if (opponentPiece instanceof Flag) {
+            this.gameOver = true;
+            console.log(`${this._playerColor} Player Wins`);
+        }
+        if (!opponentPiece) {
+            this.strategoBoard[newX][newY] = piece;
+        } else {
+            this.strategoBoard[newX][newY] = this.comparePieces(piece, opponentPiece);
+        }
+        this._safeSquares = this.findSafeSquares();
+        this._turnColor = this._turnColor === Color.Blue ? Color.Red : Color.Blue;
+        this.checkGameOver();
     }
 
     public comparePieces(a: Piece, b: Piece): Piece | null {
@@ -280,6 +351,10 @@ export class StrategoBoard {
             return b;
         }
     }
+
+    public visible(x: number, y: number): boolean {
+        return this.strategoBoard[x][y]?.color === this._playerColor;
+    }
 }
 
 type ConnectionResponse = {
@@ -290,4 +365,12 @@ type ConnectionResponse = {
 type OpponentData = {
     pieces: Piece[];
     positions: number[][];
+}
+
+type MoveData = {
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+    gameOver: boolean;
 }

@@ -54,18 +54,24 @@ export class StrategoBoardComponent {
     this.pieceSafeSquares = [];
   }
 
-  public selectingPiece(x: number, y: number): void {
-    if (this.strategoBoard.gameOver) return;
-    if (this.playerColor !== this.turnColor) return;
+  public selectingPiece(x: number, y: number): boolean {
+    let courierDetected = false;
+    if (this.strategoBoard.gameOver) return courierDetected;
+    if (this.playerColor !== this.turnColor) return courierDetected;
     const piece: FENChar | null = this.strategoBoardView[x][y];
-    if (!piece) return;
-    if (this.isWrongPieceSelected(piece)) return;
+    if (!piece) return courierDetected;
+    if (this.isWrongPieceSelected(piece)) return courierDetected;
 
     const isSameSquareClicked: boolean = !!this.selectedSquare.piece && this.selectedSquare.x === x && this.selectedSquare.y === y;
     this.unmarkingPreviouslySelectedAndSafeSquares();
-    if (isSameSquareClicked) return;
+    if (isSameSquareClicked) return courierDetected;
     this.selectedSquare = {piece, x, y};
     this.pieceSafeSquares = this.safeSquares.get(x + "," + y) || [];
+    // Drag piece behind Courier
+    if (this.selectedSquare.piece?.toUpperCase() == "C") {
+      courierDetected = true;
+    }
+    return courierDetected;
   }
 
   private placingPiece(newX: number, newY: number): void {
@@ -76,11 +82,17 @@ export class StrategoBoardComponent {
     this.strategoBoard.move(prevX, prevY, newX, newY);
     this.strategoBoardView = this.strategoBoard.strategoBoardView;
     this.unmarkingPreviouslySelectedAndSafeSquares();
+    return;
   }
 
   public move(x: number, y: number): void {
-    this.selectingPiece(x, y);
+    let courier = this.selectingPiece(x, y);
     this.placingPiece(x, y);
+
+    // Drag piece behind Courier
+    if (courier) {
+      console.log('Courier detected!');
+    }
     
     if (this.strategoBoard.gameOver) return;
     this.strategoBoard.waitForMove().then(data => {

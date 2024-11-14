@@ -1,5 +1,5 @@
 <main>   
-    <div class="game-container"> 
+    <div class="game-container" > 
         <div class="stratego-board" [ngClass]="{'rotated': rotate()}">
                 <div *ngFor="let row of strategoBoardView; let x = index" class="row">
                     <div *ngFor="let piece of row; let y = index" class="square" [ngClass]="{
@@ -8,7 +8,9 @@
                         (click)="move(x, y)"
                     >
                         <div [ngClass]="{'safe-square': isSquareSafeForSelectedPiece(x, y)}"
-                        [ngStyle]="{'background-color': getSafeSquareColor()}"></div>
+                             [ngStyle]="{'background-color': getSafeSquareColor()}"
+                             >
+                            </div>
                              <!-- [ngStyle]="{'background-color': getSafeSquareColor(playerColor)}"
                              >
                         </div> -->

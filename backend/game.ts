@@ -3,11 +3,14 @@ import { WebSocket } from "ws";
 export class Game {
     p1: WebSocket;
     p2: WebSocket;
+    battlefieldSeed: number;
 
     constructor(ws1: WebSocket, ws2: WebSocket) {
         this.p1 = ws1;
         this.p2 = ws2;
+        this.battlefieldSeed = Math.floor(Math.random() * 4);
         console.log('game started');
+        console.log(this.battlefieldSeed)
         this.p1.send(JSON.stringify({'gameStarted': true, 'player': 1}));
         this.p2.send(JSON.stringify({'gameStarted': true, 'player': 2}));
         this.gameLoop();

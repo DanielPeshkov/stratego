@@ -39,12 +39,22 @@ export class StrategoBoardComponent {
     { name: 'Bomb', icon: '/pieces/bomb-icon.png', attack: 0, defense: 15 },
     { name: 'Flag', icon: '/pieces/redFlag-icon.png', attack: 0, defense: 0 },
   ];
+
+  backgroundImages = [
+    '/battlefields/snowy-water-field.png',
+    '/battlefields/desert-water-field.png',
+    '/battlefields/rocky-water-field.png',
+    '/battlefields/wooded-water-field.png'
+  ];
+  // randomBackground!: string;
   
   constructor() {
     this.init();
   }
 
   async init() {
+    // this.randomBackground = this.backgroundImages[Math.floor(Math.random() * this.backgroundImages.length)];
+
     await this.strategoBoard.init();
     this.strategoBoardView = this.strategoBoard.strategoBoardView;
     let c = this.playerColor == Color.Blue ? FENChar.RedFlag : FENChar.BlueFlag;

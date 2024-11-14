@@ -22,6 +22,21 @@ export class StrategoBoardComponent {
   private selectedSquare: SelectedSquare = {piece: null};
   private pieceSafeSquares: Coords[] = [];
   public get gameOver(): boolean {return this.strategoBoard.gameOver};
+
+  pieceStats = [
+    { name: 'Scout', icon: '/pieces/scout-icon.png', attack: 2, defense: 2 },
+    { name: 'Sapper', icon: '/pieces/sapper-icon.png', attack: 3, defense: 3 },
+    { name: 'Infantry', icon: '/pieces/infantry-icon.png', attack: 6, defense: 2 },
+    { name: 'Courier', icon: '/pieces/courier-icon.png', attack: 5, defense: 5 },
+    { name: 'Cavalry', icon: '/pieces/cavalry-icon.png', attack: 6, defense: 6 },
+    { name: 'Artillery', icon: '/pieces/artillery-icon.png', attack: 7, defense: 7 },
+    { name: 'Dragoon', icon: '/pieces/dragoon-icon.png', attack: 7, defense: 9 },
+    { name: 'Marine', icon: '/pieces/marine-icon.png', attack: 9, defense: 9 },
+    { name: 'General', icon: '/pieces/general-icon.png', attack: 10, defense: 10 },
+    { name: 'Assassin', icon: '/pieces/assassin-icon.png', attack: 1, defense: 1 },
+    { name: 'Bomb', icon: '/pieces/bomb-icon.png', attack: 0, defense: 15 },
+    { name: 'Flag', icon: '/pieces/redFlag-icon.png', attack: 0, defense: 0 },
+  ];
   
   constructor() {
     this.init();

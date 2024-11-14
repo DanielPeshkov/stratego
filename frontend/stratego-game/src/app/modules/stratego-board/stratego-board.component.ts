@@ -13,9 +13,11 @@ import { SelectedSquare } from './models';
 })
 export class StrategoBoardComponent {
   public pieceImagePaths = pieceImagePaths;
+  public opponentImagePath = '';
   private strategoBoard = new StrategoBoard();
   public strategoBoardView: (FENChar|null)[][] = this.strategoBoard.strategoBoardView;
   public get playerColor(): Color {return this.strategoBoard.playerColor};
+  public get turnColor(): Color {return this.strategoBoard.turnColor}
   public get safeSquares(): SafeSquares {return this.strategoBoard.safeSquares}
   private selectedSquare: SelectedSquare = {piece: null};
   private pieceSafeSquares: Coords[] = [];
@@ -43,6 +45,14 @@ export class StrategoBoardComponent {
   async init() {
     await this.strategoBoard.init();
     this.strategoBoardView = this.strategoBoard.strategoBoardView;
+    let c = this.playerColor == Color.Blue ? FENChar.RedFlag : FENChar.BlueFlag;
+    this.opponentImagePath = pieceImagePaths[c];
+
+    if (this.playerColor == Color.Red) {
+      let {x1, y1, x2, y2, gameOver} = await this.strategoBoard.waitForMove();
+      this.strategoBoard.moveOpponent(x1, y1, x2, y2)
+      this.strategoBoardView = this.strategoBoard.strategoBoardView;
+    }
   }
 
   public isSquareSelected(x: number, y: number): boolean {
@@ -61,6 +71,7 @@ export class StrategoBoardComponent {
 
   public selectingPiece(x: number, y: number): void {
     if (this.strategoBoard.gameOver) return;
+    if (this.playerColor !== this.turnColor) return;
     const piece: FENChar | null = this.strategoBoardView[x][y];
     if (!piece) return;
     if (this.isWrongPieceSelected(piece)) return;
@@ -85,11 +96,27 @@ export class StrategoBoardComponent {
   public move(x: number, y: number): void {
     this.selectingPiece(x, y);
     this.placingPiece(x, y);
+    
+    if (this.strategoBoard.gameOver) return;
+    this.strategoBoard.waitForMove().then(data => {
+      let {x1, y1, x2, y2, gameOver} = data;
+      this.strategoBoard.moveOpponent(x1, y1, x2, y2)
+      this.strategoBoardView = this.strategoBoard.strategoBoardView;
+      this.strategoBoard.gameOver = gameOver;
+    });
   }
 
   public isWrongPieceSelected(piece: FENChar): boolean {
     const isRedPieceSelected: boolean = piece === piece.toUpperCase();
     return isRedPieceSelected && this.playerColor === Color.Blue || 
       !isRedPieceSelected && this.playerColor === Color.Red;
+  }
+
+  public visible(x: number, y: number): boolean {
+    return this.strategoBoard.visible(x, y);
+  }
+
+  public rotate(): boolean {
+    return this.playerColor == Color.Red;
   }
 }

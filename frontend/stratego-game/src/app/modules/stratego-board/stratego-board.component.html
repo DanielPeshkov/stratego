@@ -1,6 +1,6 @@
 <main>   
     <div class="game-container"> 
-        <div class="stratego-board">
+        <div class="stratego-board" [ngClass]="{'rotated': rotate()}">
                 <div *ngFor="let row of strategoBoardView; let x = index" class="row">
                     <div *ngFor="let piece of row; let y = index" class="square" [ngClass]="{
                         'selected-square': isSquareSelected(x, y)
@@ -11,8 +11,14 @@
                             @if (piece) {
                                 {{piece}}
                             } 
-                        <img *ngIf="piece" [src]="(pieceImagePaths[piece])" [alt]="piece" class="piece">
-                    </div>
+                        @if (visible(x, y)) {
+                <img *ngIf="piece" [src]="(pieceImagePaths[piece])" [alt]="piece" class="piece" [ngClass]="{'rotated': rotate()}">
+                        }
+            @else {
+                <img *ngIf="piece" [src]="opponentImagePath" [alt]="piece" class="piece" [ngClass]="{'rotated': rotate()}">
+            }
+            
+        </div>
                 </div>
             </div>
         </div> 
@@ -23,15 +29,4 @@
     }
 </div>
 
-<div class="legend">
-    <h3>Legend</h3>
-    <div class="legend-item" *ngFor="let piece of pieceStats">
-      <img [src]="piece.icon" [alt]="piece.name" class="piece-icon">
-      <div class="piece-details">
-        <p>{{ piece.name }}</p>
-        <p>Attack: {{ piece.attack }}</p>
-        <p>Defense: {{ piece.defense }}</p>
-      </div>
-    </div>
-</div>
 </main>

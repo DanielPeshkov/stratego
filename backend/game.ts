@@ -30,17 +30,35 @@ export class Game {
         // Process the events
         let data1: string = await event1;
         let data2: string = await event2;
-        console.log("Piece Data Recieved");
         this.p1.send(data2);
         this.p2.send(data1);
         
         while (true) {
-            if (this.checkGameOver()) {
-                break;
-                }
-        }
+            let move: string = await new Promise((resolve) => {
+                this.p1.on('message', event => {
+                    resolve(JSON.parse(event.toString()));
+                })
+            });
+            let gameOver = JSON.parse(move).gameOver;
+            this.p2.send(JSON.stringify(move));
 
-        this.closeConnections();
+            if (gameOver) {
+                break;
+            }
+
+            move = await new Promise((resolve) => {
+                this.p2.on('message', event => {
+                    resolve(JSON.parse(event.toString()));
+                })
+            });
+            gameOver = JSON.parse(move).gameOver;
+            this.p1.send(JSON.stringify(move));
+
+            if (gameOver) {
+                break;
+            }
+        }
+        setTimeout(() => this.closeConnections(), 1000)
     }
 
     checkGameOver() {

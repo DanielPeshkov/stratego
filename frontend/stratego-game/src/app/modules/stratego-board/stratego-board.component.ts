@@ -22,6 +22,8 @@ export class StrategoBoardComponent {
   private selectedSquare: SelectedSquare = {piece: null};
   private pieceSafeSquares: Coords[] = [];
   public get gameOver(): boolean {return this.strategoBoard.gameOver};
+  private targets: Coords[] = [];
+  private courierCoords: number[] = [];
 
   pieceStats = [
     { name: 'Scout', icon: '/pieces/scout-icon.png', attack: 2, defense: 2 },
@@ -83,9 +85,7 @@ export class StrategoBoardComponent {
     this.selectedSquare = {piece, x, y};
     this.pieceSafeSquares = this.safeSquares.get(x + "," + y) || [];
     // Drag piece behind Courier
-    if (this.selectedSquare.piece?.toUpperCase() == "C") {
-      courierDetected = true;
-    }
+    courierDetected = this.checkCourier();
     return courierDetected;
   }
 
@@ -101,21 +101,57 @@ export class StrategoBoardComponent {
   }
 
   public move(x: number, y: number): void {
+    console.log('colors: ', this.playerColor, this.turnColor)
+    if (this.targets.length && !this.checkCourier()) {
+      
+      for (let t of this.targets) {
+        if (t.x == x && t.y == y) {
+          console.log('drag a piece', x, y, this.courierCoords)
+          this.targets = [];
+          this.strategoBoard.drag(x, y, this.courierCoords[0], this.courierCoords[1]);
+          this.strategoBoardView = this.strategoBoard.strategoBoardView;
+          this.unmarkingPreviouslySelectedAndSafeSquares();
+          return;
+        }
+      }
+      console.log('invalid dragging piece')
+      this.targets = [];
+      this.strategoBoard.noDrag();
+      return;
+    }
     let courier = this.selectingPiece(x, y);
+    if (!this.checkCourier()) this.targets = [];
+    if (courier) this.targets = this.strategoBoard.checkCourierTargets(x, y);
     this.placingPiece(x, y);
+    if (this.strategoBoard.gameOver) return;
 
     // Drag piece behind Courier
     if (courier) {
       console.log('Courier detected!');
+      this.courierCoords = [x, y];
     }
-    
-    if (this.strategoBoard.gameOver) return;
+    if (this.targets.length && !courier) {
+      this.strategoBoard.invertTurn();
+      return;
+    }
     this.strategoBoard.waitForMove().then(data => {
       let {x1, y1, x2, y2, gameOver} = data;
       this.strategoBoard.moveOpponent(x1, y1, x2, y2)
       this.strategoBoardView = this.strategoBoard.strategoBoardView;
       this.strategoBoard.gameOver = gameOver;
+      // Courier drags a piece
+      return !gameOver && this.strategoBoardView[x2][y2]?.toUpperCase() == "C"
+    }).then(again => {
+      if (again) {
+        this.strategoBoard.waitForMove().then(data => {
+          let {x1, y1, x2, y2, gameOver} = data;
+          this.strategoBoard.moveOpponentDrag(x1, y1, x2, y2)
+          this.strategoBoardView = this.strategoBoard.strategoBoardView;
+          this.strategoBoard.gameOver = gameOver;
+        })
+      }
     });
+    console.log('end')
   }
 
   public isWrongPieceSelected(piece: FENChar): boolean {
@@ -130,5 +166,13 @@ export class StrategoBoardComponent {
 
   public rotate(): boolean {
     return this.playerColor == Color.Red;
+  }
+
+  public checkCourier(): boolean {
+    let courierDetected = false;
+    if (this.selectedSquare.piece?.toUpperCase() == "C") {
+      courierDetected = true;
+    }
+    return courierDetected;
   }
 }

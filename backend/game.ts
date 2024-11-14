@@ -39,9 +39,24 @@ export class Game {
                     resolve(JSON.parse(event.toString()));
                 })
             });
+            this.p1.removeAllListeners('message');
             let gameOver = JSON.parse(move).gameOver;
             this.p2.send(JSON.stringify(move));
+            if (gameOver) {
+                break;
+            }
+            console.log(JSON.parse(move).drag, move)
 
+            if(JSON.parse(move).drag) {
+                move = await new Promise((resolve) => {
+                    this.p1.on('message', event => {
+                        resolve(JSON.parse(event.toString()));
+                    })
+                });
+                this.p1.removeAllListeners('message');
+                gameOver = JSON.parse(move).gameOver;
+                this.p2.send(JSON.stringify(move));
+            }
             if (gameOver) {
                 break;
             }
@@ -51,9 +66,23 @@ export class Game {
                     resolve(JSON.parse(event.toString()));
                 })
             });
+            this.p2.removeAllListeners('message');
             gameOver = JSON.parse(move).gameOver;
             this.p1.send(JSON.stringify(move));
-
+            if (gameOver) {
+                break;
+            }
+            console.log(JSON.parse(move).drag, move)
+            if(JSON.parse(move).drag) {
+                move = await new Promise((resolve) => {
+                    this.p2.on('message', event => {
+                        resolve(JSON.parse(event.toString()));
+                    })
+                });
+                this.p2.removeAllListeners('message');
+                gameOver = JSON.parse(move).gameOver;
+                this.p1.send(JSON.stringify(move));
+            }
             if (gameOver) {
                 break;
             }

@@ -1,4 +1,4 @@
-import { first } from "rxjs";
+import { first, take } from "rxjs";
 import { Color, Coords, FENChar, SafeSquares } from "./models";
 import { Artillery } from "./pieces/artillery";
 import { Assassin } from "./pieces/assassin";
@@ -105,7 +105,7 @@ export class StrategoBoard {
 
     public async waitForMove() {
         let {x1, x2, y1, y2, gameOver}: MoveData = await new Promise((resolve) => {
-            this.server.asObservable().pipe(first()).subscribe(msg => {
+            this.server.asObservable().pipe(take(1)).subscribe(msg => {
                 resolve(JSON.parse(msg.toString()))
             })
         });
@@ -304,7 +304,11 @@ export class StrategoBoard {
             this.strategoBoard[newX][newY] = this.comparePieces(piece, opponentPiece);
         }
 
+        if (this.strategoBoardView[newX][newY]?.toUpperCase() == "C") {
+            this.server.next(JSON.stringify({x1: prevX, y1: prevY, x2: newX, y2: newY, gameOver: this.gameOver, drag: true}));
+        } else {
         this.server.next(JSON.stringify({x1: prevX, y1: prevY, x2: newX, y2: newY, gameOver: this.gameOver}));
+        }
         
         this._safeSquares = this.findSafeSquares();
         this._turnColor = this._turnColor === Color.Blue ? Color.Red : Color.Blue;
@@ -330,6 +334,25 @@ export class StrategoBoard {
         this._turnColor = this._turnColor === Color.Blue ? Color.Red : Color.Blue;
     }
 
+    public moveOpponentDrag(prevX: number, prevY: number, newX: number, newY: number): void {
+        if (!this.areCoordsValid(prevX, prevY) || !this.areCoordsValid(newX, newY)) return;
+        const piece: Piece | null = this.strategoBoard[prevX][prevY];
+        if (!piece) return;
+
+        this.strategoBoard[prevX][prevY] = null;
+        const opponentPiece: Piece | null = this.strategoBoard[newX][newY];
+        if (opponentPiece instanceof Flag) {
+            this.gameOver = true;
+            console.log(`${this._playerColor} Player Wins`);
+        }
+        if (!opponentPiece) {
+            this.strategoBoard[newX][newY] = piece;
+        } else {
+            this.strategoBoard[newX][newY] = this.comparePieces(piece, opponentPiece);
+        }
+        this._safeSquares = this.findSafeSquares();
+    }
+
     public comparePieces(a: Piece, b: Piece): Piece | null {
         if (a instanceof Sapper && b instanceof Bomb) {
             return a;
@@ -346,6 +369,38 @@ export class StrategoBoard {
 
     public visible(x: number, y: number): boolean {
         return this.strategoBoard[x][y]?.color === this._playerColor;
+    }
+
+    public checkCourierTargets(x: number, y: number): Coords[] {
+        let targets: Coords[] = [];
+        for (let t of [[1, 0], [0, -1], [-1, 0], [0, 1]]) {
+            if (this.areCoordsValid(t[0]+x, t[1]+y) && this.strategoBoard[t[0]+x][t[1]+y]?.color === this.playerColor) {
+                targets.push({x: t[0]+x, y: t[1]+y})
+            }
+        }
+        return targets;
+    }
+
+    public invertTurn(): void {
+        this._turnColor = this.turnColor === Color.Blue ? Color.Red : Color.Blue;
+    }
+
+    public drag(prevX: number, prevY: number, newX: number, newY: number): void {
+        const piece: Piece | null = this.strategoBoard[prevX][prevY];
+        if (!piece || piece.color !== this._playerColor || this._playerColor !== this._turnColor) return;
+        if (!piece) return;
+
+        this.strategoBoard[prevX][prevY] = null;
+        this.strategoBoard[newX][newY] = piece;
+        this.server.next(JSON.stringify({x1: prevX, y1: prevY, x2: newX, y2: newY, gameOver: this.gameOver}));
+        
+        this._safeSquares = this.findSafeSquares();
+        this._turnColor = this._turnColor === Color.Blue ? Color.Red : Color.Blue;
+    }
+
+    public noDrag(): void {
+        this.server.next(JSON.stringify({x1: -1, y1: -1, x2: -1, y2: -1, gameOver: this.gameOver}))
+        this._turnColor = this._turnColor === Color.Blue ? Color.Red : Color.Blue;
     }
 }
 

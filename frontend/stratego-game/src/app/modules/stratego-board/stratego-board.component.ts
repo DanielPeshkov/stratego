@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { StrategoBoard } from '../../stratego-logic/stratego-board';
 import { Color, Coords, FENChar, SafeSquares, pieceImagePaths } from '../../stratego-logic/models';
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { NgClass, NgFor, NgIf, NgStyle } from '@angular/common';
 import { SelectedSquare } from './models';
 
 @Component({
   selector: 'app-stratego-board',
   standalone: true,
-  imports: [NgFor, NgClass, NgIf],
+  imports: [NgFor, NgClass, NgIf, NgStyle],
   templateUrl: './stratego-board.component.html',
   styleUrl: './stratego-board.component.css'
 })
@@ -118,5 +118,18 @@ export class StrategoBoardComponent {
 
   public rotate(): boolean {
     return this.playerColor == Color.Red;
+  }
+
+  // public getSafeSquareColor(square: Color ): string {
+  //   if (square === 'Blue') {}
+  // }
+
+  public getSafeSquareColor() {
+    if (this.playerColor == Color.Red) {
+      return '#eb3f29';
+    }
+    else {
+      return '#4b4bee';
+    }
   }
 }

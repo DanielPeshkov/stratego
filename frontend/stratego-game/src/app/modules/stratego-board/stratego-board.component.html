@@ -7,10 +7,12 @@
                     }"
                         (click)="move(x, y)"
                     >
-                        <div [ngClass]="{'safe-square': isSquareSafeForSelectedPiece(x, y)}"></div>
-                            @if (piece) {
-                                {{piece}}
-                            } 
+                        <div [ngClass]="{'safe-square': isSquareSafeForSelectedPiece(x, y)}"
+                        [ngStyle]="{'background-color': getSafeSquareColor()}"></div>
+                             <!-- [ngStyle]="{'background-color': getSafeSquareColor(playerColor)}"
+                             >
+                        </div> -->
+
                         @if (visible(x, y)) {
                 <img *ngIf="piece" [src]="(pieceImagePaths[piece])" [alt]="piece" class="piece" [ngClass]="{'rotated': rotate()}">
                         }
@@ -23,12 +25,16 @@
             </div>
         </div> 
 
-<div class="game-over-message">
-    @if (gameOver) {
+@if (gameOver) {
+    <div class="game-over-message">
         Player {{playerColor + 1}} Wins!
-    }
-</div>
+    </div>
 
+    <!-- Just a place holder right now for the play again button -->
+    <button type="button" class="playAgainButton">Play Again?</button>
+}
+
+@if (!gameOver) {
 <div class="legend">
     <h3>Legend</h3>
     <div class="legend-item" *ngFor="let piece of pieceStats">
@@ -40,4 +46,5 @@
       </div>
     </div>
 </div>
+}
 </main>

@@ -128,12 +128,6 @@ export class StrategoBoard {
         this._gameOver = go;
     }
 
-    public checkGameOver(): void {
-        if (this.gameOver) {  
-            this.server.complete()
-        }
-    }
-
     public get strategoBoardView(): (FENChar|null)[][] {
         return this.strategoBoard.map(row => {
             return row.map(piece => piece instanceof Piece ? piece.FENChar : null);
@@ -314,7 +308,6 @@ export class StrategoBoard {
         
         this._safeSquares = this.findSafeSquares();
         this._turnColor = this._turnColor === Color.Blue ? Color.Red : Color.Blue;
-        this.checkGameOver();
     }
 
     public moveOpponent(prevX: number, prevY: number, newX: number, newY: number): void {
@@ -335,7 +328,6 @@ export class StrategoBoard {
         }
         this._safeSquares = this.findSafeSquares();
         this._turnColor = this._turnColor === Color.Blue ? Color.Red : Color.Blue;
-        this.checkGameOver();
     }
 
     public comparePieces(a: Piece, b: Piece): Piece | null {

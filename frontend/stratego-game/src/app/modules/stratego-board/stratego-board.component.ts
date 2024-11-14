@@ -82,6 +82,7 @@ export class StrategoBoardComponent {
     this.selectingPiece(x, y);
     this.placingPiece(x, y);
     
+    if (this.strategoBoard.gameOver) return;
     this.strategoBoard.waitForMove().then(data => {
       let {x1, y1, x2, y2, gameOver} = data;
       this.strategoBoard.moveOpponent(x1, y1, x2, y2)
@@ -98,5 +99,9 @@ export class StrategoBoardComponent {
 
   public visible(x: number, y: number): boolean {
     return this.strategoBoard.visible(x, y);
+  }
+
+  public rotate(): boolean {
+    return this.playerColor == Color.Red;
   }
 }

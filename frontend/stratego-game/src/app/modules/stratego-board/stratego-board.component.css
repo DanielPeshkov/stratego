@@ -52,8 +52,8 @@ main {
     width: 960px;
     height: 960px;
     background-size: cover;
-    /* background-position: center; */
-    background-image: url("/battlefields/wooded-field.png");
+    background-position: center;
+    background-image: url("/battlefields/snowy-water-field.png");
     margin-left: 20px;
     margin-top: 10px;
     margin-bottom: 10px;
@@ -88,7 +88,9 @@ main {
     height: 80px;
     width: 80px;
     cursor: pointer;
-    border: 1px solid #d4d4d4;
+    /* border: 1px solid #d4d4d4; */
+    border: 1px solid #e9f5fa;
+
     background-color: none;
 }
 
@@ -96,6 +98,11 @@ main {
 .game-over-message {
     color: white;
     float: right;
+    margin-right: 30px;
+    margin-top: 100px;
+    background-color: rgb(35, 116, 35);
+    font-size: larger;
+    padding: .5em 1em .5em 1em;
 }
 
 .promotion-dialog {
@@ -137,7 +144,11 @@ main {
     position: absolute;
     height: 20px;
     width: 20px;
-    background-color: #bbb;
+    background-color: #bbbbbb;
+    /* potetentially consider changing the safe square colors to match the players flag color. the one below is blue*/
+    /* background-color: #4b4bee; */
+    /* red color below */
+    /* background-color: #eb3f29; */
     border-radius: 50%;
     z-index: 100;
 }

@@ -1,24 +1,28 @@
-<div class="stratego-board">
-    <div *ngFor="let row of strategoBoardView; let x = index" class="row">
-        <div *ngFor="let piece of row; let y = index" class="square" [ngClass]="{
-            'selected-square': isSquareSelected(x, y)
-        }"
-            (click)="move(x, y)"
-        >
-            <div [ngClass]="{'safe-square': isSquareSafeForSelectedPiece(x, y)}"></div>
-                @if (piece) {
-                    {{piece}}
-                } 
-            @if (visible(x, y)) {
+<main>   
+    <div class="game-container"> 
+        <div class="stratego-board">
+                <div *ngFor="let row of strategoBoardView; let x = index" class="row">
+                    <div *ngFor="let piece of row; let y = index" class="square" [ngClass]="{
+                        'selected-square': isSquareSelected(x, y)
+                    }"
+                        (click)="move(x, y)"
+                    >
+                        <div [ngClass]="{'safe-square': isSquareSafeForSelectedPiece(x, y)}"></div>
+                            @if (piece) {
+                                {{piece}}
+                            } 
+                        @if (visible(x, y)) {
                 <img *ngIf="piece" [src]="(pieceImagePaths[piece])" [alt]="piece" class="piece">
-            }
+                        }
             @else {
                 <img *ngIf="piece" [src]="opponentImagePath" [alt]="piece" class="piece">
             }
             
         </div>
-    </div>
-</div>"
+                </div>
+            </div>
+        </div> 
+</main>
 <div class="game-over-message">
     @if (gameOver) {
         Player {{playerColor + 1}} Wins!

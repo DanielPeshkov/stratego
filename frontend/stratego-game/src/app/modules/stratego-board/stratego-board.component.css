@@ -1,16 +1,62 @@
 main {
-    margin-left: 20px;
+    /* margin-left: 20px;
     margin-top: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 20px; */
+    display: block;
+    margin-top: 0px;
+    background-color: rgb(167, 143, 113);
 }
 
+.legend {
+    /* display: inline-block; */
+    float: right;
+    margin-right: 20px;
+    margin-top: 10px;
+    /* grid-template-columns: repeat(1, 1fr); */
+    gap: 10px;
+    padding: 20px;
+    border-style: solid;
+    border-color: black;
+  }
+  
+  .legend-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .piece-icon {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+  }
+  
+  .piece-details p {
+    margin: 5px 0;
+  }
+
+  p {
+    font-size: 12px;
+  }
+
+  h3 {
+    margin-bottom: 5px;
+    text-align: center;
+    text-decoration: underline;
+  }
+
 .game-container {
+    display: inline-block;
     /* position: relative; */
     width: 960px;
-    height: 720px;
+    height: 960px;
     background-size: cover;
     /* background-position: center; */
     background-image: url("/battlefields/wooded-field.png");
+    margin-left: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .stratego-board {
@@ -39,7 +85,7 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 60px;
+    height: 80px;
     width: 80px;
     cursor: pointer;
     border: 1px solid #d4d4d4;

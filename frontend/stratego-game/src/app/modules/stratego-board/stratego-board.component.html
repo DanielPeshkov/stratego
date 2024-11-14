@@ -16,9 +16,22 @@
                 </div>
             </div>
         </div> 
-</main>
+
 <div class="game-over-message">
     @if (gameOver) {
         Player {{playerColor + 1}} Wins!
     }
 </div>
+
+<div class="legend">
+    <h3>Legend</h3>
+    <div class="legend-item" *ngFor="let piece of pieceStats">
+      <img [src]="piece.icon" [alt]="piece.name" class="piece-icon">
+      <div class="piece-details">
+        <p>{{ piece.name }}</p>
+        <p>Attack: {{ piece.attack }}</p>
+        <p>Defense: {{ piece.defense }}</p>
+      </div>
+    </div>
+</div>
+</main>

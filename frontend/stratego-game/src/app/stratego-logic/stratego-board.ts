@@ -86,10 +86,10 @@ export class StrategoBoard {
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0],
-                [0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0],
-                [0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0],
-                [0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0],
+                [0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0],
+                [0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0],
+                [0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0],
+                [0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -371,12 +371,15 @@ export class StrategoBoard {
                     
                     if (newPiece && newPiece.color === piece.color) continue;
 
+                    if (this.environment[newX][newY] === 1 && !piece.swim) continue;
+
                     if (piece instanceof Bomb || piece instanceof Flag) {
                     } else if (piece instanceof Scout) {
                         while (this.areCoordsValid(newX, newY)) {
                             newPiece = this.strategoBoard[newX][newY];
                             // cant move to a space already occupied by your own piece
                             if (newPiece && newPiece.color === piece.color) break;
+                            // cant move to a water tile
                             if (this.environment[newX][newY] === 1) break;
                             pieceSafeSquares.push({x: newX, y: newY});
 
@@ -392,10 +395,14 @@ export class StrategoBoard {
                         if (!this.areCoordsValid(newX, newY)) continue;
                         newPiece = this.strategoBoard[newX][newY];
                         if (newPiece && newPiece.color === piece.color) continue;
-                        pieceSafeSquares.push({x: newX, y: newY});
+                        // checks if two spaces ahead are water
+                        if (this.environment[newX][newY] === 1) continue;
+                        if (this.environment[newX][newY] === 0) {
+                        pieceSafeSquares.push({x: newX, y: newY});}
                     } else {
                         pieceSafeSquares.push({x: newX, y: newY});
                     }
+
                 }
                 if (pieceSafeSquares.length) {
                     safeSquares.set(x + "," + y, pieceSafeSquares);

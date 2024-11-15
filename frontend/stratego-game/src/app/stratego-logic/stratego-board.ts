@@ -25,16 +25,13 @@ export class StrategoBoard {
     private server: WebSocketSubject<any>;
 
     private environment: (number)[][];
-    public randomSeed: number = 0;
+    public randomSeed: number | undefined;
     private mapPaths: string[] = [
         '/battlefields/rocky-water-field.png',
-        '/battlefields/basic-field.png',
-        '/battlefields/desert-field.png',
-        '/battlefields/desert-water-field.png',
-        '/battlefields/snowy-field.png',
         '/battlefields/snowy-water-field.png',
-        '/battlefields/wooded-field.png',
-        '/battlefields/wooded-water-field.png',
+        '/battlefields/wooded-water-field.png',  
+        '/battlefields/desert-water-field.png',
+        '/battlefields/basic-field.png',      
     ]
     public backgroundImage: string = '';
     private startingPositions: number[][] = [];
@@ -71,10 +68,10 @@ export class StrategoBoard {
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0],
-                [0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0],
-                [0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0],
                 [0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0],
+                [0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0],
+                [0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0],
+                [0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -88,10 +85,10 @@ export class StrategoBoard {
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0],
-                [0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0],
-                [0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0],
-                [0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -105,9 +102,9 @@ export class StrategoBoard {
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0],
-                [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0],
+                [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -116,15 +113,32 @@ export class StrategoBoard {
             ]
         }
         // desert-water-field
+        else if (this.randomSeed === 3) {
+            return this.environment = [
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            ]
+        }
+        // basic-field
         else {
             return this.environment = [
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0],
-                [0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0],
-                [0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -339,6 +353,7 @@ export class StrategoBoard {
         for (let x = 0; x < this.strategoBoardSize; x++) {
             for (let y = 0; y < this.strategoBoardSize; y++) {
                 const piece: Piece | null = this.strategoBoard[x][y];
+                // cant move it if it's not your piece or if its a blank tile
                 if (!piece || piece.color !== this._playerColor) continue;
                 // if (!piece) continue;
 
@@ -347,16 +362,20 @@ export class StrategoBoard {
                     let newX: number = x + dx;
                     let newY: number = y + dy;
 
+                    // if the new move would take you off the board, it continues
                     if (!this.areCoordsValid(newX, newY)) continue;
 
                     let newPiece: Piece | null = this.strategoBoard[newX][newY];
+                    
                     if (newPiece && newPiece.color === piece.color) continue;
 
                     if (piece instanceof Bomb || piece instanceof Flag) {
                     } else if (piece instanceof Scout) {
                         while (this.areCoordsValid(newX, newY)) {
                             newPiece = this.strategoBoard[newX][newY];
+                            // cant move to a space already occupied by your own piece
                             if (newPiece && newPiece.color === piece.color) break;
+                            if (this.environment[newX][newY] === 1) break;
                             pieceSafeSquares.push({x: newX, y: newY});
 
                             if (newPiece !== null) break;

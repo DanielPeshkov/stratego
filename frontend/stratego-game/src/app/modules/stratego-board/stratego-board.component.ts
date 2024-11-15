@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { StrategoBoard } from '../../stratego-logic/stratego-board';
 import { Color, Coords, FENChar, SafeSquares, pieceImagePaths } from '../../stratego-logic/models';
 import { NgClass, NgFor, NgIf, NgStyle } from '@angular/common';
@@ -26,6 +26,7 @@ export class StrategoBoardComponent {
   private noTargets: boolean = false;
   private courierCoords: number[] = [];
   public backgroundImage: string = this.strategoBoard.backgroundImage;
+  public get finishedPlacement(): boolean {return this.strategoBoard.finishedPlacement}
 
   pieceStats = [
     { name: 'Scout', icon: '/pieces/scout-icon.png', attack: 2, defense: 2 },
@@ -50,13 +51,21 @@ export class StrategoBoardComponent {
   ];
   
   constructor() {
-    this.init();
+    this.startPlacement();
+  }
+
+  async startPlacement() {
+    await this.strategoBoard.init();
+    this.backgroundImage = this.strategoBoard.backgroundImage;
+
+    setTimeout(async () => {
+      await this.strategoBoard.finishInit()
+      await this.init();
+    }, 20000)
+    
   }
 
   async init() {
-
-    await this.strategoBoard.init();
-    this.backgroundImage = this.strategoBoard.backgroundImage;
     this.strategoBoardView = this.strategoBoard.strategoBoardView;
     let c = this.playerColor == Color.Blue ? FENChar.RedFlag : FENChar.BlueFlag;
     this.opponentImagePath = pieceImagePaths[c];
@@ -127,6 +136,12 @@ export class StrategoBoardComponent {
   }
 
   public move(x: number, y: number): void {
+    if (!this.finishedPlacement) {
+      this.strategoBoard.placePiece(x, y);
+      this.strategoBoardView = this.strategoBoard.strategoBoardView;
+      return;
+    }
+
     if ((this.targets.length || this.noTargets) && !this.checkCourier()) {
       for (let t of this.targets) {
         if (t.x == x && t.y == y) {

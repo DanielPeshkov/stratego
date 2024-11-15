@@ -8,7 +8,7 @@ export class Game {
     constructor(ws1: WebSocket, ws2: WebSocket) {
         this.p1 = ws1;
         this.p2 = ws2;
-        this.battlefieldSeed = Math.floor(Math.random() * 4);
+        this.battlefieldSeed = Math.floor(Math.random() * 5);
         console.log('game started');
         console.log(this.battlefieldSeed)
         this.p1.send(JSON.stringify({'gameStarted': true, 'player': 1, 'randomSeed':this.battlefieldSeed}));

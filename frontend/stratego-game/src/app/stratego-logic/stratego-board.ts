@@ -40,6 +40,7 @@ export class StrategoBoard {
     private startingPositions: number[][] = [];
     private piecesToPlace: Piece[] = [];
     private positions: number[][] = [];
+    public finishedPlacement: boolean = false;
 
     constructor(){
         this.server = webSocket('ws://localhost:3000')
@@ -151,40 +152,44 @@ export class StrategoBoard {
         if (response.player == 1) {
             this.piecesToPlace = this.generatePieces(Color.Blue);
             this.positions = this.randomizePositions(false);
-            this.finishPlacing();
-            this.server.next(JSON.stringify({'pieces': this.generatePieces(Color.Blue), 'positions': this.startingPositions}));
-            let data: OpponentData = await new Promise((resolve) => {
-                this.server.asObservable().pipe(first()).subscribe(msg => {
-                    resolve(msg);
-                })
-            });
-            let pieces2 = data.pieces;
-            let positions2 = data.positions;
-            while (positions2.length > 0) {
-                let pos = positions2.pop()!;
-                let pieceCode = pieces2.pop()!;
-                this.strategoBoard[pos[0]][pos[1]] =  this.pieceFromCode(pieceCode, Color.Red);
-            }
         } else {
             this._playerColor = Color.Red;
             this.piecesToPlace = this.generatePieces(Color.Red);
             this.positions = this.randomizePositions(true);
-            this.finishPlacing();
-            this.server.next(JSON.stringify({'pieces': this.generatePieces(Color.Red), 'positions': this.startingPositions}));
-            let data: OpponentData = await new Promise((resolve) => {
-                this.server.asObservable().pipe(first()).subscribe(msg => {
-                    resolve(msg);
-                })
-            });
-            let pieces = data.pieces;
-            let positions = data.positions;
-            while (positions.length > 0) {
-                let pos = positions.pop()!;
-                let pieceCode = pieces.pop()!;
-                this.strategoBoard[pos[0]][pos[1]] =  this.pieceFromCode(pieceCode, Color.Blue);
+        }
+    }
+
+    placePiece(x: number, y: number) {
+        if (this.finishedPlacement) return;
+        if (this.playerColor && x > 3) return;
+        if (!this.playerColor && x < 8) return;
+
+        if (!this.strategoBoard[x][y]) {
+            if (this.piecesToPlace.length) {
+                this.strategoBoard[x][y] = this.piecesToPlace.shift()!
+                this.startingPositions.push([x, y])
             }
         }
+    }
+
+    async finishInit(): Promise<boolean> {
+        await setTimeout(async () => this.finishedPlacement = true, 0);
+        this.finishPlacing();
+        this.server.next(JSON.stringify({'pieces': this.generatePieces(this.playerColor), 'positions': this.startingPositions}));
+        let data: OpponentData = await new Promise((resolve) => {
+            this.server.asObservable().pipe(first()).subscribe(msg => {
+                resolve(msg);
+            })
+        });
+        let pieces = data.pieces;
+        let positions = data.positions;
+        while (positions.length > 0) {
+            let pos = positions.pop()!;
+            let pieceCode = pieces.pop()!;
+            this.strategoBoard[pos[0]][pos[1]] =  this.pieceFromCode(pieceCode, 1^this.playerColor);
+        }
         this._safeSquares = this.findSafeSquares();
+        return true;
     }
 
     public finishPlacing(): void {

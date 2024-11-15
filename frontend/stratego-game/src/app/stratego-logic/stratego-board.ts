@@ -157,9 +157,6 @@ export class StrategoBoard {
                 })
             });
         }
-        console.log(response)
-        console.log('server response: ', response.player)
-        console.log('seed', response.randomSeed)
         this.backgroundImage = this.mapPaths[response.randomSeed];
         
         if (response.player == 1) {
@@ -405,7 +402,7 @@ export class StrategoBoard {
         const opponentPiece: Piece | null = this.strategoBoard[newX][newY];
         if (opponentPiece instanceof Flag) {
             this.gameOver = true;
-            console.log(`${this._playerColor} Player Wins`);
+            console.log(`${this._playerColor + 1} Player Wins`);
         }
         if (!opponentPiece) {
             this.strategoBoard[newX][newY] = piece;
@@ -432,7 +429,7 @@ export class StrategoBoard {
         const opponentPiece: Piece | null = this.strategoBoard[newX][newY];
         if (opponentPiece instanceof Flag) {
             this.gameOver = true;
-            console.log(`${this._playerColor} Player Wins`);
+            console.log(`${this._playerColor + 1} Player Wins`);
         }
         if (!opponentPiece) {
             this.strategoBoard[newX][newY] = piece;
@@ -452,7 +449,7 @@ export class StrategoBoard {
         const opponentPiece: Piece | null = this.strategoBoard[newX][newY];
         if (opponentPiece instanceof Flag) {
             this.gameOver = true;
-            console.log(`${this._playerColor} Player Wins`);
+            console.log(`${this._playerColor + 1} Player Wins`);
         }
         if (!opponentPiece) {
             this.strategoBoard[newX][newY] = piece;

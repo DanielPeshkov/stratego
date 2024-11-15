@@ -23,6 +23,7 @@ export class StrategoBoardComponent {
   private pieceSafeSquares: Coords[] = [];
   public get gameOver(): boolean {return this.strategoBoard.gameOver};
   private targets: Coords[] = [];
+  private noTargets: boolean = false;
   private courierCoords: number[] = [];
   public backgroundImage: string = this.strategoBoard.backgroundImage;
 
@@ -61,9 +62,24 @@ export class StrategoBoardComponent {
     this.opponentImagePath = pieceImagePaths[c];
 
     if (this.playerColor == Color.Red) {
-      let {x1, y1, x2, y2, gameOver} = await this.strategoBoard.waitForMove();
-      this.strategoBoard.moveOpponent(x1, y1, x2, y2)
-      this.strategoBoardView = this.strategoBoard.strategoBoardView;
+      await this.strategoBoard.waitForMove().then(data => {
+        let {x1, y1, x2, y2, gameOver} = data;
+        this.strategoBoard.moveOpponent(x1, y1, x2, y2)
+        this.strategoBoardView = this.strategoBoard.strategoBoardView;
+        this.strategoBoard.gameOver = gameOver;
+        // Courier drags a piece
+        let again = x2 < 0 ? false : !gameOver && this.strategoBoardView[x2][y2]?.toUpperCase() == "C"
+        return again;
+      }).then(again => {
+        if (again) {
+          this.strategoBoard.waitForMove().then(data => {
+            let {x1, y1, x2, y2, gameOver} = data;
+            this.strategoBoard.moveOpponentDrag(x1, y1, x2, y2)
+            this.strategoBoardView = this.strategoBoard.strategoBoardView;
+            this.strategoBoard.gameOver = gameOver;
+          })
+        }
+      });
     }
   }
 
@@ -111,12 +127,9 @@ export class StrategoBoardComponent {
   }
 
   public move(x: number, y: number): void {
-    console.log('colors: ', this.playerColor, this.turnColor)
-    if (this.targets.length && !this.checkCourier()) {
-      
+    if ((this.targets.length || this.noTargets) && !this.checkCourier()) {
       for (let t of this.targets) {
         if (t.x == x && t.y == y) {
-          console.log('drag a piece', x, y, this.courierCoords)
           this.targets = [];
           this.strategoBoard.drag(x, y, this.courierCoords[0], this.courierCoords[1]);
           this.strategoBoardView = this.strategoBoard.strategoBoardView;
@@ -124,20 +137,23 @@ export class StrategoBoardComponent {
           return;
         }
       }
-      console.log('invalid dragging piece')
       this.targets = [];
+      if (this.noTargets) this.strategoBoard.invertTurn();
+      this.noTargets = false;
       this.strategoBoard.noDrag();
       return;
     }
     let courier = this.selectingPiece(x, y);
-    if (!this.checkCourier()) this.targets = [];
-    if (courier) this.targets = this.strategoBoard.checkCourierTargets(x, y);
+    if (!this.checkCourier()) {this.targets = []; this.noTargets = false;}
+    if (courier) {
+      this.targets = this.strategoBoard.checkCourierTargets(x, y);
+      this.noTargets = this.targets.length == 0;
+    }
     this.placingPiece(x, y);
     if (this.strategoBoard.gameOver) return;
 
     // Drag piece behind Courier
     if (courier) {
-      console.log('Courier detected!');
       this.courierCoords = [x, y];
     }
     if (this.targets.length && !courier) {
@@ -150,7 +166,8 @@ export class StrategoBoardComponent {
       this.strategoBoardView = this.strategoBoard.strategoBoardView;
       this.strategoBoard.gameOver = gameOver;
       // Courier drags a piece
-      return !gameOver && this.strategoBoardView[x2][y2]?.toUpperCase() == "C"
+      let again = x2 < 0 ? false : !gameOver && this.strategoBoardView[x2][y2]?.toUpperCase() == "C"
+      return again;
     }).then(again => {
       if (again) {
         this.strategoBoard.waitForMove().then(data => {
@@ -161,7 +178,6 @@ export class StrategoBoardComponent {
         })
       }
     });
-    console.log('end')
   }
 
   public isWrongPieceSelected(piece: FENChar): boolean {
@@ -185,10 +201,6 @@ export class StrategoBoardComponent {
     }
     return courierDetected;
   }
-
-  // public getSafeSquareColor(square: Color ): string {
-  //   if (square === 'Blue') {}
-  // }
 
   public getSafeSquareColor() {
     if (this.playerColor == Color.Red) {

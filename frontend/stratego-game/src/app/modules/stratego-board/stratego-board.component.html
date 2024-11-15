@@ -1,6 +1,6 @@
 <main>   
-    <div class="game-container" [ngStyle]="{'background-image': 'url('+backgroundImage+')'}"> 
-        <div class="stratego-board" [ngClass]="{'rotated': rotate()}">
+    <div class="game-container" [ngStyle]="{'background-image': 'url('+backgroundImage+')'}" [ngClass]="{'rotated': rotate()}"> 
+        <div class="stratego-board">
                 <div *ngFor="let row of strategoBoardView; let x = index" class="row">
                     <div *ngFor="let piece of row; let y = index" class="square" [ngClass]="{
                         'selected-square': isSquareSelected(x, y)

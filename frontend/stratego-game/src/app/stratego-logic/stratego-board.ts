@@ -24,8 +24,8 @@ export class StrategoBoard {
     public _gameOver: boolean = false;
     private server: WebSocketSubject<any>;
 
-    private environment: (number)[][];
-    public randomSeed: number | undefined;
+    private environment!: (number)[][];
+    // public randomSeed: number = 1;
     private mapPaths: string[] = [
         '/battlefields/rocky-water-field.png',
         '/battlefields/snowy-water-field.png',
@@ -56,12 +56,13 @@ export class StrategoBoard {
             [null, null, null, null, null, null, null, null, null, null, null, null],
         ]
         this._safeSquares = this.findSafeSquares();
-        this.environment = this.getEnvironment();
+        // this.environment = this.getEnvironment();
+        
     }
 
-    getEnvironment() {
+    getEnvironment(index: number) {
         // rocky-water-field
-        if (this.randomSeed === 0) {
+        if (index === 0) {
             return this.environment = [
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -78,14 +79,14 @@ export class StrategoBoard {
             ]
         } 
         // snowy-water-field
-        else if (this.randomSeed === 1) {
+        else if (index === 1) {
             return this.environment = [
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -95,15 +96,15 @@ export class StrategoBoard {
             ]
         }
         // wooded-water-field
-        else if (this.randomSeed === 2) {
+        else if (index === 2) {
             return this.environment = [
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -112,7 +113,7 @@ export class StrategoBoard {
             ]
         }
         // desert-water-field
-        else if (this.randomSeed === 3) {
+        else if (index === 3) {
             return this.environment = [
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -161,6 +162,7 @@ export class StrategoBoard {
             });
         }
         this.backgroundImage = this.mapPaths[response.randomSeed];
+        this.environment = this.getEnvironment(response.randomSeed);
         
         if (response.player == 1) {
             this.piecesToPlace = this.generatePieces(Color.Blue);

@@ -451,7 +451,7 @@ export class StrategoBoard {
         if (!opponentPiece) {
             this.strategoBoard[newX][newY] = piece;
         } else {
-            this.strategoBoard[newX][newY] = this.comparePieces(piece, opponentPiece);
+            this.strategoBoard[newX][newY] = this.compareOpponentPieces(piece, opponentPiece);
         }
         this._safeSquares = this.findSafeSquares();
         this._turnColor = this._turnColor === Color.Blue ? Color.Red : Color.Blue;
@@ -471,7 +471,7 @@ export class StrategoBoard {
         if (!opponentPiece) {
             this.strategoBoard[newX][newY] = piece;
         } else {
-            this.strategoBoard[newX][newY] = this.comparePieces(piece, opponentPiece);
+            this.strategoBoard[newX][newY] = this.compareOpponentPieces(piece, opponentPiece);
         }
         this._safeSquares = this.findSafeSquares();
     }
@@ -484,6 +484,20 @@ export class StrategoBoard {
         } else if (a instanceof Assassin && (b instanceof General || b instanceof Assassin)) {
             return a;
         } else if (a.attack >= b.defense) {
+            return a;
+        } else {
+            return b;
+        }
+    }
+
+    public compareOpponentPieces(a: Piece, b: Piece): Piece | null {
+        if (a instanceof Sapper && b instanceof Bomb) {
+            return a;
+        } else if (a instanceof Artillery && b instanceof Bomb) {
+            return null;
+        } else if (a instanceof Assassin && (b instanceof General || b instanceof Assassin)) {
+            return a;
+        } else if (a.attack > b.defense) {
             return a;
         } else {
             return b;

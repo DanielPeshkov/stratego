@@ -24,6 +24,7 @@ export class StrategoBoardComponent {
   public get gameOver(): boolean {return this.strategoBoard.gameOver};
   private targets: Coords[] = [];
   private courierCoords: number[] = [];
+  public backgroundImage: string = this.strategoBoard.backgroundImage;
 
   pieceStats = [
     { name: 'Scout', icon: '/pieces/scout-icon.png', attack: 2, defense: 2 },
@@ -46,16 +47,15 @@ export class StrategoBoardComponent {
     '/battlefields/rocky-water-field.png',
     '/battlefields/wooded-water-field.png'
   ];
-  // randomBackground!: string;
   
   constructor() {
     this.init();
   }
 
   async init() {
-    // this.randomBackground = this.backgroundImages[Math.floor(Math.random() * this.backgroundImages.length)];
 
     await this.strategoBoard.init();
+    this.backgroundImage = this.strategoBoard.backgroundImage;
     this.strategoBoardView = this.strategoBoard.strategoBoardView;
     let c = this.playerColor == Color.Blue ? FENChar.RedFlag : FENChar.BlueFlag;
     this.opponentImagePath = pieceImagePaths[c];

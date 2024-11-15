@@ -26,6 +26,17 @@ export class StrategoBoard {
 
     private environment: (number)[][];
     public randomSeed: number = 0;
+    private mapPaths: string[] = [
+        '/battlefields/rocky-water-field.png',
+        '/battlefields/basic-field.png',
+        '/battlefields/desert-field.png',
+        '/battlefields/desert-water-field.png',
+        '/battlefields/snowy-field.png',
+        '/battlefields/snowy-water-field.png',
+        '/battlefields/wooded-field.png',
+        '/battlefields/wooded-water-field.png',
+    ]
+    public backgroundImage: string = '';
 
     constructor(){
         this.server = webSocket('ws://localhost:3000')
@@ -132,6 +143,7 @@ export class StrategoBoard {
         console.log(response)
         console.log('server response: ', response.player)
         console.log('seed', response.randomSeed)
+        this.backgroundImage = this.mapPaths[response.randomSeed];
         
         if (response.player == 1) {
             let pieces = this.generatePieces(Color.Blue);

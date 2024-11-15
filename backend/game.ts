@@ -11,8 +11,8 @@ export class Game {
         this.battlefieldSeed = Math.floor(Math.random() * 4);
         console.log('game started');
         console.log(this.battlefieldSeed)
-        this.p1.send(JSON.stringify({'gameStarted': true, 'player': 1}));
-        this.p2.send(JSON.stringify({'gameStarted': true, 'player': 2}));
+        this.p1.send(JSON.stringify({'gameStarted': true, 'player': 1, 'randomSeed':this.battlefieldSeed}));
+        this.p2.send(JSON.stringify({'gameStarted': true, 'player': 2, 'randomSeed':this.battlefieldSeed}));
         this.gameLoop();
     }
 

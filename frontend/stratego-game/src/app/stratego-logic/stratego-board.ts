@@ -369,9 +369,18 @@ export class StrategoBoard {
 
                     let newPiece: Piece | null = this.strategoBoard[newX][newY];
                     
-                    if (newPiece && newPiece.color === piece.color) continue;
+                    if (newPiece && newPiece.color === piece.color) {
+                        // not sure if this is necessary anymore, but it is working lol. In theory it passes  
+                        // over the cavalry class so it can still jump over its own pieces
+                        if (piece instanceof Cavalry) {}
+                        else {continue}
+                    };
 
-                    if (this.environment[newX][newY] === 1 && !piece.swim) continue;
+                    // again not sure if this is necessary anymore, but this allows cavalry to jump over water
+                    if (this.environment[newX][newY] === 1 && !piece.swim) {
+                        if (piece instanceof Cavalry) {}
+                        else {continue}
+                        };
 
                     if (piece instanceof Bomb || piece instanceof Flag) {
                     } else if (piece instanceof Scout) {
@@ -388,17 +397,20 @@ export class StrategoBoard {
                             newY += dy;
                         }
                     } else if (piece instanceof Cavalry) {
-                        pieceSafeSquares.push({x: newX, y: newY});
-                        if (newPiece != null) continue;
-                        newX += dx;
-                        newY += dy;
-                        if (!this.areCoordsValid(newX, newY)) continue;
                         newPiece = this.strategoBoard[newX][newY];
-                        if (newPiece && newPiece.color === piece.color) continue;
-                        // checks if two spaces ahead are water
-                        if (this.environment[newX][newY] === 1) continue;
-                        if (this.environment[newX][newY] === 0) {
-                        pieceSafeSquares.push({x: newX, y: newY});}
+                        // only pushes newX and newY if it's not its teams piece and if it's not a water tile
+                        if ((newPiece && newPiece.color === piece.color)) {} else{ if (this.environment[newX][newY] !== 1) pieceSafeSquares.push({x: newX, y: newY})};
+
+                        // creates new jump piece, essentially just newPiece with 2 squares instead of 1
+                        let jumpX: number = x + dx + dx;
+                        let jumpY: number = y + dy + dy;
+                        if (!this.areCoordsValid(jumpX, jumpY)) continue;
+                        let jumpPiece: Piece | null = this.strategoBoard[jumpX][jumpY];
+                        if (jumpPiece && jumpPiece.color === piece.color) continue;
+
+                        // checks if it's jumping on land or not
+                        if (this.environment[jumpX][jumpY] === 0) pieceSafeSquares.push({x: jumpX, y: jumpY});
+
                     } else {
                         pieceSafeSquares.push({x: newX, y: newY});
                     }
